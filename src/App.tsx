@@ -1,5 +1,11 @@
+import Study from "./study";
+
 function App() {
-  return <div>App.tsx 파일입니다.</div>;
+  return (
+    <>
+      <Study />
+    </>
+  );
 }
 
 export default App;
