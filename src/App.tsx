@@ -2,6 +2,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AppHeader } from "./components/common";
 import { AppSidebar } from "./components/common/AppSidebar";
 import { SkeletonHotTopic, SkeletonNewTopic } from "./components/skeleton";
+import { AppFooter } from "./components/common/AppFooter";
+import { Button } from "./components/ui";
+import { PencilLine } from "lucide-react";
 
 function App() {
   return (
@@ -10,6 +13,15 @@ function App() {
         <AppHeader />
         <div className="container">
           <main className="w-full h-full min-h-180 flex p-6 gap-6">
+            <div className="fixed right-1/2 bottom-10 translate-x-1/2 z-20 items-center">
+              <Button
+                variant={"destructive"}
+                className="py-5! px-6! rounded-full"
+              >
+                <PencilLine />
+                나만의 토픽 작성
+              </Button>
+            </div>
             <AppSidebar />
             <section className="flex-1 flex flex-col gap-12">
               {/* HOT TOPIC */}
@@ -65,6 +77,7 @@ function App() {
             </section>
           </main>
         </div>
+        <AppFooter />
       </div>
     </ThemeProvider>
   );
