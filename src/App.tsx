@@ -1,10 +1,14 @@
-import Study from "./study";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AppHeader } from "./components/common";
 
 function App() {
   return (
-    <>
-      <Study />
-    </>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <div className="page">
+        <AppHeader />
+        <div className="container"></div>
+      </div>
+    </ThemeProvider>
   );
 }
 
