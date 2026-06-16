@@ -59,3 +59,13 @@ export const CLASS_CATEGORY = [
     icon: <Footprints />,
   },
 ];
+
+export const TOPIC_CATEGORY = [
+  { id: 1, label: "인문학", category: "humanity" },
+  { id: 2, label: "스타트업", category: "start-up" },
+  { id: 3, label: "IT·프로그래밍", category: "programing" },
+  { id: 4, label: "서비스·전략 기획", category: "planning" },
+  { id: 5, label: "마케팅", category: "marketing" },
+  { id: 6, label: "디자인·일러스트", category: "design" },
+  { id: 7, label: "자기계발", category: "self-development" },
+];
