@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { AppSidebar } from "../components/common/AppSidebar";
+import { AppSidebar } from "../components/common";
 import { SkeletonHotTopic, SkeletonNewTopic } from "../components/skeleton";
 import { Button } from "../components/ui";
 import { PencilLine } from "lucide-react";
