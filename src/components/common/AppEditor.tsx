@@ -6,8 +6,13 @@ import { ko } from "@blocknote/core/locales";
 import "@blocknote/mantine/style.css";
 // Include the included Inter font
 import "@blocknote/core/fonts/inter.css";
+import type { Block } from "@blocknote/core";
 
-export function AppEditor() {
+interface Props {
+  setContent: (content: Block[]) => void;
+}
+
+export function AppEditor({ setContent }: Props) {
   const locale = ko;
 
   const editor = useCreateBlockNote({
@@ -20,5 +25,10 @@ export function AppEditor() {
     },
   });
   // Render the editor
-  return <BlockNoteView editor={editor} />;
+  return (
+    <BlockNoteView
+      editor={editor}
+      onChange={() => setContent(editor.document)}
+    />
+  );
 }
