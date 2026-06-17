@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AppEditor } from "@/components/common";
+import { AppEditor, AppFileUpload } from "@/components/common";
 import {
   Button,
   Input,
@@ -11,7 +11,6 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-  Skeleton,
 } from "@/components/ui";
 import { TOPIC_CATEGORY } from "@/constants/category.constant";
 import {
@@ -26,6 +25,7 @@ import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores";
 import { useNavigate, useParams } from "react-router";
 import type { Block } from "@blocknote/core";
+import { nanoid } from "nanoid";
 
 export default function CreateTopic() {
   const user = useAuthStore((state) => state.user);
@@ -42,9 +42,46 @@ export default function CreateTopic() {
       return;
     }
 
+    // 파일 업로드 시,
+    // 1. Supabase의 Storage(bucket)에 이미지를 먼저 업로드 한 후
+    // 2. 이미지가 저장된 bucket 폴더의 경로 URL 주소를 Topic 테이블 thumbnail 컬럼에 문자열 형태로 저장
+
+    let thumbnailUrl: string | null = null;
+
+    if (thumbnail && thumbnail instanceof File) {
+      // 썸네일 이미지를 storage에 업로드
+      const fileExt = thumbnail.name.split(".").pop();
+      const fileName = `${nanoid()}.${fileExt}`;
+      const filePath = `topics/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("files")
+        .upload(filePath, thumbnail);
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // 업로드된 이미지의 Public URL 값 가져오기
+      const { data } = supabase.storage.from("files").getPublicUrl(filePath);
+
+      if (!data) throw new Error("썸네일 Public URL 조회를 실패하였습니다.");
+      thumbnailUrl = data.publicUrl;
+    } else if (typeof thumbnail === "string") {
+      // 기존 이미지 유지
+      thumbnailUrl = thumbnail;
+    }
+
     const { data, error } = await supabase
       .from("topic")
-      .update([{ title, content, category, thumbnail, author: user.id }])
+      .update([
+        {
+          title,
+          content: JSON.stringify(content),
+          category,
+          thumbnail: thumbnailUrl,
+          author: user.id,
+        },
+      ])
       .eq("id", topicId)
       .select();
     if (data) {
@@ -154,8 +191,12 @@ export default function CreateTopic() {
             <Asterisk size={14} className="text-[#F96859]" />
             <Label className="text-muted-foreground">썸네일</Label>
           </div>
-          <Skeleton className="w-full aspect-video" />
-          <Button variant={"outline"} className="border-0">
+          <AppFileUpload file={thumbnail} onChange={setThumbnail} />
+          <Button
+            variant={"outline"}
+            className="border-0"
+            onClick={() => setThumbnail(null)}
+          >
             <ImageOff />
             썸네일 제거
           </Button>
