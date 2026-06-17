@@ -36,9 +36,7 @@ export default function SignIn() {
     },
   });
 
-  const setId = useAuthStore((state) => state.setId);
-  const setEmail = useAuthStore((state) => state.setEmail);
-  const setRole = useAuthStore((state) => state.setRole);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -50,9 +48,11 @@ export default function SignIn() {
         password: values.password,
       });
       if (user && session) {
-        setId(user.id);
-        setEmail(user.email);
-        setRole(user.role);
+        setUser({
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        });
         toast.success("로그인을 완료하였습니다.");
         navigate("/");
       }

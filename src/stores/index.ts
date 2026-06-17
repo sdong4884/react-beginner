@@ -1,4 +1,6 @@
+import { supabase } from "@/lib/supabase";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 // const useStore = create((set) => ({
 //   bears: 0,
@@ -7,26 +9,31 @@ import { create } from "zustand";
 //   updateBears: (newBears) => set({ bears: newBears }),
 // }));
 
-interface AuthStore {
+interface User {
   id: string;
   email: string;
   role: string;
+}
 
-  setId: (id: string) => void;
-  setEmail: (email: string) => void;
-  setRole: (role: string) => void;
-
+interface AuthStore {
+  user: User;
+  setUser: (newUser: User) => void;
   reset: () => void;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  id: "",
-  email: "",
-  role: "",
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      user: null,
+      setUser: (newUser: User) => set({ user: newUser }),
 
-  setId: (newId) => set({ id: newId }),
-  setEmail: (newEmail) => set({ email: newEmail }),
-  setRole: (newRole) => set({ role: newRole }),
-
-  reset: () => set({ id: "", email: "", role: "" }),
-}));
+      // 로그아웃 (상태 + Supabase 세션 모두 제거)
+      reset: async () => {
+        await supabase.auth.signOut();
+        set({ user: null }); // Zustand 상태 초기화
+        localStorage.removeItem("auth-storage");
+      },
+    }),
+    { name: "auth-storage" },
+  ),
+);
