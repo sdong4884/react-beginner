@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useAuthStore } from "@/stores";
 
 const formSchema = z.object({
   email: z.email({
@@ -35,13 +36,23 @@ export default function SignIn() {
     },
   });
 
+  const setId = useAuthStore((state) => state.setId);
+  const setEmail = useAuthStore((state) => state.setEmail);
+  const setRole = useAuthStore((state) => state.setRole);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const {
+        data: { user, session },
+        error,
+      } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
-      if (data) {
+      if (user && session) {
+        setId(user.id);
+        setEmail(user.email);
+        setRole(user.role);
         toast.success("로그인을 완료하였습니다.");
         navigate("/");
       }
