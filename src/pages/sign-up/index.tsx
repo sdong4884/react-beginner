@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   Button,
   Checkbox,
@@ -17,6 +17,8 @@ import {
 } from "@/components/ui";
 import { ArrowLeft, Asterisk, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const formSchema = z
   .object({
@@ -42,6 +44,8 @@ const formSchema = z
   });
 
 export default function SignUp() {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,7 +59,30 @@ export default function SignUp() {
   const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(false);
   const [marketingAgreed, setMarketingAgreed] = useState<boolean>(false);
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!serviceAgreed || !privacyAgreed) {
+      toast.warning("필수 동의항목을 체크해주세요.");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        return;
+      }
+      if (data) {
+        toast.success("회원가입을 완료하였습니다.");
+        navigate("/sign-in");
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error(error, { cause: error });
+    }
+  };
 
   return (
     <main className="w-full h-full min-h-180 flex items-center justify-center p-6 gap-6">
@@ -109,7 +136,7 @@ export default function SignUp() {
                     <FormLabel>비밀번호 확인</FormLabel>
                     <FormControl>
                       <Input
-                        type="confirmPassword"
+                        type="password"
                         placeholder="비밀번호를 다시 한 번 입력하세요."
                         {...field}
                       />

@@ -8,6 +8,7 @@ import SignUp from "./pages/sign-up";
 import SignIn from "./pages/sign-in";
 import CreateTopic from "./pages/topics/create.tsx";
 import RootLayout from "./pages/layout.tsx";
+import { Toaster } from "sonner";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")!).render(
           </Route>
         </Routes>
       </BrowserRouter>
+      <Toaster richColors position="top-center" />
     </ThemeProvider>
   </StrictMode>,
 );
