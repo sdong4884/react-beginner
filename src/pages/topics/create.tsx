@@ -1,3 +1,4 @@
+import { AppEditor } from "@/components/common";
 import {
   Button,
   Input,
@@ -59,7 +60,7 @@ export default function create() {
             <Asterisk size={14} className="text-[#F96859]" />
             <Label className="text-muted-foreground">본문</Label>
           </div>
-          <Skeleton className="w-full h-100" />
+          <AppEditor />
         </div>
       </section>
       <section className="w-1/4 h-full flex flex-col gap-6">
