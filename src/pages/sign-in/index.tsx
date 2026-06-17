@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   Button,
   Form,
@@ -12,6 +12,8 @@ import {
   FormMessage,
   Input,
 } from "@/components/ui";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   email: z.email({
@@ -23,6 +25,8 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -31,7 +35,25 @@ export default function SignIn() {
     },
   });
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+      if (data) {
+        toast.success("로그인을 완료하였습니다.");
+        navigate("/");
+      }
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error(error, { cause: error });
+    }
+  };
 
   return (
     <main className="w-full h-full min-h-180 flex items-center justify-center p-6 gap-6">
