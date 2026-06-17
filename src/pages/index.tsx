@@ -3,9 +3,40 @@ import { AppSidebar } from "../components/common";
 import { SkeletonHotTopic, SkeletonNewTopic } from "../components/skeleton";
 import { Button } from "../components/ui";
 import { PencilLine } from "lucide-react";
+import { useAuthStore } from "@/stores";
+import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 function App() {
+  const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
+  const handleRoute = async () => {
+    if (!user) {
+      toast.warning("토픽 작성은 로그인 후 가능합니다.");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("topic")
+      .insert([
+        {
+          title: null,
+          content: null,
+          category: null,
+          thumbnail: null,
+          author: user.id,
+        },
+      ])
+      .select();
+    if (data) {
+      toast.success("토픽을 생성하였습니다.");
+      navigate(`/topics/${data[0].id}/create`);
+    }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+  };
 
   return (
     <main className="w-full h-full min-h-180 flex p-6 gap-6">
@@ -13,7 +44,7 @@ function App() {
         <Button
           variant={"destructive"}
           className="py-5! px-6! rounded-full"
-          onClick={() => navigate("/topics/create")}
+          onClick={handleRoute}
         >
           <PencilLine />
           나만의 토픽 작성
