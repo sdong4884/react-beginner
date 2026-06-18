@@ -26,3 +26,16 @@ export {
   FormField,
 } from "./form";
 export { Checkbox } from "./checkbox";
+export {
+  Dialog,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "./dialog";
+export { Badge, badgeVariants } from "./badge";
